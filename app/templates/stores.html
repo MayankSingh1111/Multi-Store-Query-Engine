@@ -1,0 +1,139 @@
+{% extends "base.html" %}
+{% set active = 'stores' %}
+{% block title %}Stores — Multi-Store SQL{% endblock %}
+
+{% block content %}
+<header class="page-head">
+  <div>
+    <h1>Store Registry</h1>
+    <p class="muted">All stores share the same SQL login. Add or edit endpoints below.</p>
+  </div>
+  <div class="head-actions">
+    <button id="bulkImportBtn" class="btn-ghost">⬆ BULK IMPORT (CSV)</button>
+    <button id="addStoreBtn" class="btn-primary">+ ADD STORE</button>
+  </div>
+</header>
+
+<section class="filter-strip">
+  <input id="searchStores" class="search-input" placeholder="Search by code, IP, or label..." />
+  <select id="filterEnabled" class="search-input" style="max-width: 200px;">
+    <option value="">All stores</option>
+    <option value="1">Enabled only</option>
+    <option value="0">Disabled only</option>
+  </select>
+  <span class="filter-count" id="storeCount">0 stores</span>
+</section>
+
+<section class="table-wrap">
+  <table class="data-table">
+    <thead>
+      <tr>
+        <th style="width: 50px;">#</th>
+        <th>Store Code</th>
+        <th>Label</th>
+        <th>IP Address</th>
+        <th style="width: 90px;">Port</th>
+        <th>Database</th>
+        <th style="width: 100px;">Status</th>
+        <th style="width: 160px;">Actions</th>
+      </tr>
+    </thead>
+    <tbody id="storesBody"></tbody>
+  </table>
+</section>
+
+<!-- Add/edit store modal -->
+<div id="storeModal" class="modal hidden">
+  <div class="modal-card">
+    <div class="modal-head">
+      <h3 id="storeModalTitle">Add Store</h3>
+      <button class="modal-close" data-close>×</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-grid">
+        <label>Store Code <span class="req">*</span>
+          <input id="fStoreCode" placeholder="e.g. STR001" />
+        </label>
+        <label>Label
+          <input id="fLabel" placeholder="e.g. Mumbai - Andheri" />
+        </label>
+        <label>IP Address <span class="req">*</span>
+          <input id="fIp" placeholder="e.g. 10.10.5.21" />
+        </label>
+        <label>Port
+          <input id="fPort" type="number" value="1433" />
+        </label>
+        <label class="span-2">Database <span class="muted" style="font-weight:400;font-size:12px;">(leave blank → uses store_code as DB name)</span>
+          <input id="fDatabase" placeholder="leave blank to use store_code" />
+        </label>
+        <label class="span-2 inline">
+          <input id="fEnabled" type="checkbox" checked /> Enabled
+        </label>
+      </div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn-ghost btn-sm" data-close>Cancel</button>
+      <button id="saveStoreBtn" class="btn-primary btn-sm">SAVE</button>
+    </div>
+  </div>
+</div>
+
+<!-- Bulk import modal -->
+<div id="bulkModal" class="modal hidden">
+  <div class="modal-card">
+    <div class="modal-head">
+      <h3>Bulk Import Stores</h3>
+      <button class="modal-close" data-close>×</button>
+    </div>
+    <div class="modal-body">
+      <p class="muted">
+        Paste CSV. Columns: <code>store_code, ip, port, database, label</code>.
+        Port defaults to 1433. Lines starting with <code>#</code> are ignored.
+      </p>
+      <textarea id="bulkInput" rows="14" placeholder="STR001, 10.10.5.21, 1433, , Mumbai Andheri
+STR002, 10.10.5.22, 1433, , Mumbai Bandra
+..."></textarea>
+      <label class="inline" style="margin-top:10px; display:flex; align-items:center; gap:8px; font-size:13px; color:var(--fg-1);">
+        <input id="bulkUpdateExisting" type="checkbox" />
+        <span>Update existing stores when store_code already exists
+          <span class="muted" style="font-size:12px;">(default: skip duplicates)</span>
+        </span>
+      </label>
+    </div>
+    <div class="modal-foot">
+      <button class="btn-ghost btn-sm" data-close>Cancel</button>
+      <button id="bulkImportRun" class="btn-primary btn-sm">IMPORT</button>
+    </div>
+  </div>
+</div>
+
+<!-- Duplicate-store confirmation modal -->
+<div id="dupModal" class="modal hidden">
+  <div class="modal-card" style="max-width: 560px;">
+    <div class="modal-head">
+      <h3>Store already exists</h3>
+      <button class="modal-close" id="dupCancelBtn">×</button>
+    </div>
+    <div class="modal-body">
+      <p>
+        A store with code <strong id="dupCode" style="color:var(--accent); font-family:var(--font-mono);"></strong>
+        is already in the registry. Choose what to do:
+      </p>
+      <div id="dupCompare" class="dup-compare-wrap"></div>
+      <p class="muted" style="margin-top:10px; font-size:12px;">
+        <strong>Update</strong> overwrites the existing row with your new values.<br>
+        <strong>Keep existing</strong> leaves it alone and discards your new entry.
+      </p>
+    </div>
+    <div class="modal-foot">
+      <button id="dupCancelBtn2" class="btn-ghost btn-sm" data-close>Cancel</button>
+      <button id="dupKeepBtn" class="btn-ghost btn-sm">KEEP EXISTING</button>
+      <button id="dupUpdateBtn" class="btn-primary btn-sm">UPDATE</button>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="/static/stores.js"></script>
+{% endblock %}

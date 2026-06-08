@@ -1,0 +1,129 @@
+{% extends "base.html" %}
+{% set active = 'builder' %}
+{% block title %}Report Builder — Multi-Store SQL{% endblock %}
+
+{% block content %}
+<header class="page-head">
+  <div>
+    <h1>Report Builder</h1>
+    <p class="muted">Drag columns into <em>Select</em>, <em>Filters</em>, <em>Group By</em>, or <em>Sort</em>. SQL is generated for you and fanned out to all stores.</p>
+  </div>
+  <div class="head-actions">
+    <button id="saveReportBtn" class="btn-ghost">★ SAVE REPORT</button>
+    <button id="runReportBtn" class="btn-primary">▶ RUN ACROSS ALL STORES</button>
+  </div>
+</header>
+
+<section class="builder">
+  <!-- Left column: schema -->
+  <aside class="schema-pane">
+    <div class="schema-head">
+      <span>Source</span>
+      <button id="refreshSchema" class="link-btn">⟳ refresh</button>
+    </div>
+    <div class="schema-table-picker">
+      <input id="tableFilter" class="search-input" placeholder="Search tables..." />
+      <select id="schemaStore" class="search-input">
+        <option value="">Any responding store</option>
+      </select>
+    </div>
+    <div id="tablesList" class="tables-list">
+      <div class="empty-mini">Click ⟳ to load tables</div>
+    </div>
+
+    <div class="schema-head" style="margin-top: 24px;">
+      <span id="columnsHead">Columns</span>
+    </div>
+    <div id="columnsList" class="columns-list">
+      <div class="empty-mini">Pick a table first</div>
+    </div>
+
+    <div class="schema-head" style="margin-top: 24px;">
+      <span>Saved reports</span>
+    </div>
+    <div id="savedReports" class="saved-reports"></div>
+  </aside>
+
+  <!-- Right column: drop zones + preview -->
+  <section class="canvas-pane">
+    <div class="canvas-table-banner">
+      <span class="banner-label">Table</span>
+      <span id="currentTable" class="banner-val">— none selected —</span>
+    </div>
+
+    <div class="drop-grid">
+      <div class="drop-zone" data-zone="select">
+        <div class="zone-head">
+          <span>SELECT</span>
+          <span class="zone-hint">drop columns here</span>
+        </div>
+        <div class="zone-body" id="zone-select"></div>
+      </div>
+
+      <div class="drop-zone" data-zone="filter">
+        <div class="zone-head">
+          <span>WHERE / FILTERS</span>
+          <span class="zone-hint">drop columns, then set op + value</span>
+        </div>
+        <div class="zone-body" id="zone-filter"></div>
+      </div>
+
+      <div class="drop-zone" data-zone="group">
+        <div class="zone-head">
+          <span>GROUP BY</span>
+          <span class="zone-hint">drop columns to aggregate by</span>
+        </div>
+        <div class="zone-body" id="zone-group"></div>
+      </div>
+
+      <div class="drop-zone" data-zone="order">
+        <div class="zone-head">
+          <span>ORDER BY</span>
+          <span class="zone-hint">drop columns, click ↑/↓ to flip</span>
+        </div>
+        <div class="zone-body" id="zone-order"></div>
+      </div>
+    </div>
+
+    <div class="limit-row">
+      <label>Limit (TOP N):
+        <input id="limitInput" type="number" min="0" placeholder="e.g. 100" />
+      </label>
+    </div>
+
+    <div class="sql-preview">
+      <div class="preview-head">
+        <span>Generated SQL</span>
+        <button id="copySqlBtn" class="link-btn">⎘ copy</button>
+      </div>
+      <pre id="sqlPreview">-- drag columns to begin --</pre>
+    </div>
+
+    <!-- Report run result -->
+    <div id="reportResult" class="report-result hidden"></div>
+  </section>
+</section>
+
+<!-- Save modal -->
+<div id="saveModal" class="modal hidden">
+  <div class="modal-card">
+    <div class="modal-head">
+      <h3>Save Report</h3>
+      <button class="modal-close" data-close>×</button>
+    </div>
+    <div class="modal-body">
+      <label>Report Name
+        <input id="saveName" placeholder="e.g. Daily Sales by Store" />
+      </label>
+    </div>
+    <div class="modal-foot">
+      <button class="btn-ghost btn-sm" data-close>Cancel</button>
+      <button id="saveReportConfirm" class="btn-primary btn-sm">SAVE</button>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="/static/builder.js"></script>
+{% endblock %}

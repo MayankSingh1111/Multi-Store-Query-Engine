@@ -1,0 +1,99 @@
+{% extends "base.html" %}
+{% set active = 'query' %}
+{% block title %}Query Console — Multi-Store SQL{% endblock %}
+
+{% block content %}
+<header class="page-head">
+  <div>
+    <h1>Query Console</h1>
+    <p class="muted">Run T-SQL across all enabled stores in parallel. Results are unified with a <code>_store</code> column.</p>
+  </div>
+  <div class="head-actions">
+    <button id="runBtn" class="btn-primary">
+      <span class="kbd">⌘</span><span class="kbd">↵</span>&nbsp; RUN QUERY
+    </button>
+    <button id="csvBtn" class="btn-ghost">⬇ CSV</button>
+    <button id="xlsxBtn" class="btn-ghost" title="Export to Excel (single sheet)">⬇ Excel</button>
+  </div>
+</header>
+
+<!-- Export progress bar (hidden by default) -->
+<div id="exportProgress" class="export-progress hidden">
+  <div class="export-progress-row">
+    <span class="export-icon">⬇</span>
+    <span id="exportLabel" class="export-label">Preparing export...</span>
+    <span id="exportPct"   class="export-pct"></span>
+  </div>
+  <div class="export-track"><div id="exportFill" class="export-fill"></div></div>
+</div>
+
+<section class="editor-shell">
+  <div class="editor-tabs">
+    <span class="tab active">query.sql</span>
+    <span class="tab-hint">SELECT only — DML/DDL will be sent to every store</span>
+  </div>
+  <textarea id="sqlEditor" spellcheck="false" placeholder="-- Example: SELECT TOP 10 * FROM sales WHERE bill_date = CAST(GETDATE() AS DATE);
+SELECT TOP 5 name FROM sys.tables ORDER BY name;"></textarea>
+  <div class="editor-foot">
+    <div class="snippet-row">
+      <span class="snippet-label">QUICK:</span>
+      <button class="chip" data-snippet="SELECT @@SERVERNAME AS server, DB_NAME() AS [database], GETDATE() AS now;">Server info</button>
+      <button class="chip" data-snippet="SELECT TOP 50 name FROM sys.tables ORDER BY name;">List tables</button>
+      <button class="chip" data-snippet="SELECT COUNT(*) AS bills_today FROM <table> WHERE bill_date = CAST(GETDATE() AS DATE);">Today's bills</button>
+      <button class="chip" data-snippet="SELECT TOP 1 * FROM <table> ORDER BY 1 DESC;">Latest row</button>
+    </div>
+  </div>
+</section>
+
+<section id="resultSummary" class="hidden summary-strip">
+  <div class="metric"><div class="metric-num" id="mTotal">0</div><div class="metric-lbl">Stores</div></div>
+  <div class="metric metric-ok"><div class="metric-num" id="mOk">0</div><div class="metric-lbl">Connected</div></div>
+  <div class="metric metric-bad">
+    <div class="metric-num" id="mFail">0</div>
+    <div class="metric-lbl">
+      Disconnected
+      <button id="showFailed" class="link-btn">view »</button>
+    </div>
+  </div>
+  <div class="metric"><div class="metric-num" id="mRows">0</div><div class="metric-lbl">Rows</div></div>
+  <div class="metric"><div class="metric-num" id="mTime">0<span class="metric-unit">ms</span></div><div class="metric-lbl">Duration</div></div>
+  <div class="summary-ratio">
+    <div class="ratio-track"><div id="ratioFill" class="ratio-fill"></div></div>
+    <div class="ratio-text" id="ratioText">— / —</div>
+  </div>
+</section>
+
+<section class="result-shell">
+  <div class="result-tabs">
+    <button class="rtab active" data-view="unified">Unified</button>
+    <button class="rtab" data-view="perstore">Per Store</button>
+    <button class="rtab" data-view="failed">Failed</button>
+  </div>
+  <div id="resultBox" class="result-box">
+    <div class="empty-state">
+      <div class="empty-icon">▱</div>
+      <div class="empty-title">No results yet</div>
+      <div class="empty-sub">Write a SQL statement and press <span class="kbd">⌘</span><span class="kbd">↵</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- Failed-stores modal -->
+<div id="failedModal" class="modal hidden">
+  <div class="modal-card">
+    <div class="modal-head">
+      <h3>Disconnected Stores</h3>
+      <button class="modal-close" data-close>×</button>
+    </div>
+    <div id="failedList" class="modal-body"></div>
+    <div class="modal-foot">
+      <button id="retryFailed" class="btn-ghost btn-sm">Retry these stores only</button>
+      <button class="btn-primary btn-sm" data-close>Close</button>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="/static/query.js"></script>
+{% endblock %}

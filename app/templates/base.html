@@ -1,0 +1,59 @@
+{# Base layout shared across pages #}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>{% block title %}Multi-Store SQL{% endblock %}</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/static/app.css" />
+  {% block head %}{% endblock %}
+</head>
+<body>
+  <div class="app">
+    <aside class="sidebar">
+      <div class="brand">
+        <div class="brand-mark">▣</div>
+        <div>
+          <div class="brand-title">MULTI-STORE</div>
+          <div class="brand-sub">SQL QUERY ENGINE</div>
+        </div>
+      </div>
+
+      <nav class="nav">
+        <a href="/"          class="nav-item {% if active=='query' %}active{% endif %}">
+          <span class="nav-ico">›_</span> Query Console
+        </a>
+        <a href="/stores"    class="nav-item {% if active=='stores' %}active{% endif %}">
+          <span class="nav-ico">◧</span> Store Registry
+        </a>
+        <a href="/builder"   class="nav-item {% if active=='builder' %}active{% endif %}">
+          <span class="nav-ico">⌘</span> Report Builder
+        </a>
+        <a href="/settings"  class="nav-item {% if active=='settings' %}active{% endif %}">
+          <span class="nav-ico">⚙</span> Settings
+        </a>
+      </nav>
+
+      <div class="sidebar-foot">
+        <div id="connStatus" class="conn-status">
+          <span class="dot"></span>
+          <span id="connStatusText">Ready</span>
+        </div>
+        <button id="pingAllBtn" class="btn-ghost btn-sm">
+          PING ALL STORES
+        </button>
+      </div>
+    </aside>
+
+    <main class="main">
+      {% block content %}{% endblock %}
+    </main>
+  </div>
+
+  <script src="/static/app.js"></script>
+  {% block scripts %}{% endblock %}
+</body>
+</html>

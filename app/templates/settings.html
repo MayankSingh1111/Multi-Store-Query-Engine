@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+{% set active = 'settings' %}
+{% block title %}Settings — Multi-Store SQL{% endblock %}
+
+{% block content %}
+<header class="page-head">
+  <div>
+    <h1>Connection Settings</h1>
+    <p class="muted">Shared across every registered store. Change once — applies everywhere.</p>
+  </div>
+</header>
+
+<section class="settings-card">
+  <div class="info-banner">
+    <strong>Database naming convention:</strong> each store connects to a database
+    named after its <code>store_code</code> (e.g. store <code>S001</code> → database
+    <code>S001</code>). Override per-store from the Stores page if needed.
+  </div>
+  <div class="form-grid">
+    <label class="span-2">SQL Username
+      <input id="sUsername" placeholder="e.g. sa or v2_app" />
+    </label>
+    <label class="span-2">SQL Password
+      <input id="sPassword" type="password" placeholder="••••••••" />
+      <span class="hint" id="pwdHint"></span>
+    </label>
+    <label class="span-2">ODBC Driver
+      <input id="sDriver" placeholder="ODBC Driver 17 for SQL Server" />
+    </label>
+  </div>
+
+  <div class="settings-foot">
+    <button id="saveSettings" class="btn-primary">SAVE SETTINGS</button>
+    <button id="testOne" class="btn-ghost">TEST WITH FIRST STORE</button>
+  </div>
+</section>
+
+<section class="settings-card">
+  <h3>Runtime parameters</h3>
+  <p class="muted">These are environment-level — restart the service to change.</p>
+  <table class="kv-table">
+    <tr><th>Max Concurrency</th><td id="rMax">—</td><td class="muted">parallel store connections per query</td></tr>
+    <tr><th>Connect Timeout</th><td id="rCT">—</td><td class="muted">seconds before treating a store as offline</td></tr>
+    <tr><th>Query Timeout</th><td id="rQT">—</td><td class="muted">seconds before cancelling a slow query on a store</td></tr>
+  </table>
+</section>
+
+<section class="settings-card">
+  <h3>Recent query history</h3>
+  <div id="historyBox" class="history-box">
+    <div class="empty-mini">No queries run yet</div>
+  </div>
+</section>
+{% endblock %}
+
+{% block scripts %}
+<script src="/static/settings.js"></script>
+{% endblock %}
