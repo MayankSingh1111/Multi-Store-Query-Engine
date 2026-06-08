@@ -153,8 +153,20 @@ multistore-query/
 
 ## 🖥️ Screenshots
 
-| Query Console | Store Manager | Report Builder |
-|---|---|---|
+## 🖥️ Screenshots
+
+### Query Console
+![Query Console](screenshots/query.jpg)
+
+### Report Builder
+![Report Builder](screenshots/rep_bulider.jpg)
+
+### Store Results
+![Store Results 1](screenshots/st-rg-1.jpg)
+![Store Results 2](screenshots/st-rg-2.jpg)
+![Store Results 3](screenshots/st-rg-3.jpg)
+
+
 | Write SQL, run on all stores | Add/edit/enable stores | Build reports without SQL |
 
 ---
